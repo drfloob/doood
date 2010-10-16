@@ -10,7 +10,7 @@ doodz = {
     }
 
 ## The users that this will work for
-users = ["remotekk", "robosnork"]
+users = ["somechick", "somedood"]
 
 ################################################################################
 # THE REST IS CODE
