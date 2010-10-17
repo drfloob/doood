@@ -4,9 +4,10 @@ import sys, time, random, os.path, json
 import logging
 import the_purple as purp
 
+logger = logging.getLogger("doood")
 
 def get_reasonable_pause_before_reply():
-    logging.debug("test debug output: %d", 5 )
+    logger.debug("test debug output: %d", 5 )
     return random.randrange(1,3)
 
 
@@ -15,11 +16,11 @@ def on_wrote_im_message(account
                         , message
                         , conversation
                         , flags ):
-    logging.debug("account = %s", str(account))
-    logging.debug("sender = %s", str(who_wrote))
-    logging.debug("message = %s", str(message))
-    logging.debug("conversation = %s", str(conversation))
-    logging.debug("flags = %s", str(flags))
+    logger.debug("account = %s", str(account))
+    logger.debug("sender = %s", str(who_wrote))
+    logger.debug("message = %s", str(message))
+    logger.debug("conversation = %s", str(conversation))
+    logger.debug("flags = %s", str(flags))
 
 
 
