@@ -8,6 +8,9 @@ import conversation_info as ci
 import the_purple as purp
 import multiprocessing
 
+import subprocess as subp
+import shlex
+
 ConfigData= None
 logger = logging.getLogger("doood")
 ParallelRespond = False
@@ -81,8 +84,15 @@ def dood(account, sender, message, conversation, flags):
                         #print "not running in parallel yet"
                         #respond(sender, conversation, ConfigData[u"replies"][key])
                         logger.debug("Spawning new process to handle '%s' message from %s" % (key, sender))
-                        p = multiprocessing.Process(target=respond, args=(sender, conversation, ConfigData[u"replies"][key]))
-                        p.start()
+#                        p = multiprocessing.Process(target=respond, args=(sender, conversation, ConfigData[u"replies"][key]))
+#                        p.start()
+                        reply_txt = "\"" + ConfigData[u"replies"][key] + "\""
+                        subp.Popen( [ "/home/kk/DOOD/repo/doood/other_guy.py"
+                                      , str(sender)
+                                      , str(conversation)
+                                      , reply_txt ] )
+                        logger.debug("hmmmm")
+#                        return 0
                     else:
                         respond(sender, conversation, ConfigData[u"replies"][key])
                 except dbus.exceptions.DBusException:
@@ -94,6 +104,12 @@ def dood(account, sender, message, conversation, flags):
                 break
 
 def respond(who, conversation, saying):
+    # wait for a second before typing
+    #time.sleep( ci.get_reasonable_pause_before_reply() )
+    for i in range(0,29999):
+        if i % 1000 == 0:
+            logger.debug("wut")
+
     purple = purp.get_purple(purp.get_bus())
 
     #sets THEIR typing status in YOUR conversation window. WTF?
@@ -103,18 +119,19 @@ def respond(who, conversation, saying):
     logger.debug("conv: %s", purple.PurpleConvIm(conversation))
     gc = purple.PurpleConversationGetGc(conversation)
 
-    # wait for a second before typing
-    time.sleep( ci.get_reasonable_pause_before_reply() )
-    
+
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
-    time.sleep(random.randrange(2,5))
+    #time.sleep(random.randrange(2,5))
     
     # send message
     purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
     
     # just in case, set status to "not typing"
     purple.ServSendTyping(gc, who, 0)
+
+    loop = gobject.MainLoop()
+    loop.run()
 
 
 def handle_cmdargs():
