@@ -9,6 +9,13 @@ import conversation_info as ci
 ConfigData= None
 logger = logging.getLogger("doood")
 
+def get_purple():
+    global bus
+    obj = bus.get_object("im.pidgin.purple.PurpleService", "/im/pidgin/purple/PurpleObject")
+    purple = dbus.Interface(obj, "im.pidgin.purple.PurpleInterface")
+    return purple
+
+
 def config_file_path():
     """Returns the absolute path to the working config file. If no config file exists, the program quits"""
     Home= os.getenv("HOME")
@@ -44,6 +51,10 @@ def dood(account, sender, message, conversation, flags):
     logger.debug("conversation = %s", str(conversation))
     logger.debug("flags = %s", str(flags))
 
+    purple = get_purple()
+    cd = purple.PurpleConversationGetChatData( conversation )
+    logging.debug("data = %s", str(cd))
+
     if sender in ConfigData[u"users"]:
         logger.debug("%s said: '%s'", sender, message)
         for key in ConfigData[u"replies"].iterkeys():
@@ -60,10 +71,8 @@ DBusGMainLoop(set_as_default=True)
 bus = dbus.SessionBus()
 
 def respond(who, conversation, saying):
-    global bus
-    obj = bus.get_object("im.pidgin.purple.PurpleService", "/im/pidgin/purple/PurpleObject")
-    purple = dbus.Interface(obj, "im.pidgin.purple.PurpleInterface")
-    
+    purple = get_purple()
+
     #sets THEIR typing status in YOUR conversation window. WTF?
     #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
 
