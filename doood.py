@@ -99,8 +99,10 @@ def dood(account, sender, message, conversation, flags):
                 break
 
 def respond(who, conversation, saying):
+    print("in serial respond")
+
     # wait for a second before typing
-    time.sleep( ci.get_reasonable_pause_before_reply() )
+    time.sleep( 10 )
 
     purple = purp.get_purple(purp.get_bus())
 
@@ -114,16 +116,13 @@ def respond(who, conversation, saying):
 
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
-    time.sleep(random.randrange(2,5))
+    time.sleep(15)
     
     # send message
     purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
     
     # just in case, set status to "not typing"
-    purple.ServSendTyping(gc, who, 0)
-
-    loop = gobject.MainLoop()
-    loop.run()
+    #purple.ServSendTyping(gc, who, 0)
 
 
 def handle_cmdargs():
