@@ -7,6 +7,11 @@ import logging # in the __main__ function the log level is set.
 import conversation_info as ci
 ConfigData= None
 
+import dbus, gobject, string
+from dbus.mainloop.glib import DBusGMainLoop
+DBusGMainLoop(set_as_default=True)
+bus = dbus.SessionBus()
+
 def get_purple():
     global bus
     obj = bus.get_object("im.pidgin.purple.PurpleService", "/im/pidgin/purple/PurpleObject")
@@ -76,10 +81,6 @@ def dood(account, sender, message, conversation, flags):
                 respond(sender, conversation, ConfigData[u"replies"][key])
                 break
 
-import dbus, gobject, string
-from dbus.mainloop.glib import DBusGMainLoop
-DBusGMainLoop(set_as_default=True)
-bus = dbus.SessionBus()
 
 def respond(who, conversation, saying):
     purple = get_purple()
