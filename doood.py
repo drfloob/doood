@@ -3,9 +3,11 @@
 CONFIG_FILENAME= ".doood_config.json"
 
 import sys, time, random, os.path, json
-import logging # in the __main__ function the log level is set.
+import logging
 import conversation_info as ci
+
 ConfigData= None
+logger = logging.getLogger("doood")
 
 def config_file_path():
     """Returns the absolute path to the working config file. If no config file exists, the program quits"""
@@ -19,36 +21,35 @@ def config_file_path():
     if os.path.isfile(os.path.join(Home, CONFIG_FILENAME)):
         return os.path.join(Home, CONFIG_FILENAME)
 
-    print "No config file was found"
+    logger.critical("No config file was found")
     sys.exit(42)
     
 
 def load_settings():
+    """Loads config file and parses JSON data"""
     global ConfigData
     FilePath= config_file_path()
     with open(FilePath) as f:
         ConfigData= json.load(f)
 
     #debug info
-    print "Loaded Config Data from file", FilePath, ":"
-    print json.dumps(ConfigData, sort_keys=True, indent=4)
-    print "Raw Config Data"
-    print ConfigData
+    logger.debug("Loaded Config Data from file '%s'", FilePath)
+    logger.debug(json.dumps(ConfigData, sort_keys=True, indent=4))
 
 
 def dood(account, sender, message, conversation, flags):
-    logging.debug("account = %s", str(account))
-    logging.debug("sender = %s", str(sender))
-    logging.debug("message = %s", str(message))
-    logging.debug("conversation = %s", str(conversation))
-    logging.debug("flags = %s", str(flags))
+    logger.debug("account = %s", str(account))
+    logger.debug("sender = %s", str(sender))
+    logger.debug("message = %s", str(message))
+    logger.debug("conversation = %s", str(conversation))
+    logger.debug("flags = %s", str(flags))
 
     if sender in ConfigData[u"users"]:
-        #print sender, "said: ", message
+        logger.debug("%s said: '%s'", sender, message)
         for key in ConfigData[u"replies"].iterkeys():
             if string.find(string.lower(message), string.lower(key)) != -1:
                 #debug info
-                print("responding to: ", key)
+                logger.debug("responding to: '%s'", key)
 
                 respond(sender, conversation, ConfigData[u"replies"][key])
                 break
@@ -66,8 +67,8 @@ def respond(who, conversation, saying):
     #sets THEIR typing status in YOUR conversation window. WTF?
     #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
 
-    #print "gc: ", purple.PurpleConversationGetGc(conversation)
-    #print "conv: ", purple.PurpleConvIm(conversation)
+    logger.debug("gc: %s", purple.PurpleConversationGetGc(conversation))
+    logger.debug("conv: %s", purple.PurpleConvIm(conversation))
     gc = purple.PurpleConversationGetGc(conversation)
 
     # wait for a second before typing
@@ -84,10 +85,37 @@ def respond(who, conversation, saying):
     purple.ServSendTyping(gc, who, 0)
 
 
+def handle_cmdargs():
+    import getopt
+    args = sys.argv[1:]
+    logger.debug(args)
+    try:
+        oplist, args = getopt.getopt(args, "vd")
+    except getopt.GetoptError, e:
+        print "Error: %s" % e
+        usage()
+        sys.exit(2)
+    for opt, arg in oplist:
+        if opt == "-d":
+            logging.basicConfig(level=logging.DEBUG)
+            logger.debug("debug logging level set")
+        elif opt == "-v":
+            logging.basicConfig(level=logging.INFO)
+            logger.info("info logging level set")
+        else:
+            print("Invalid Option: %s", opt)
+            usage()
+            sys.exit(2)
+
+def usage():
+    print "Usage: doood.py [-v]"
+
 
 if __name__ == "__main__":
+
+    handle_cmdargs()
+    
     load_settings()
-    logging.basicConfig(level=logging.DEBUG) # this should probably be configurable
     bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
