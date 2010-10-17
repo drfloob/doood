@@ -5,20 +5,13 @@ CONFIG_FILENAME= ".doood_config.json"
 import sys, time, random, os.path, json
 import logging
 import conversation_info as ci
+import the_purple as purp
 
 ConfigData= None
 logger = logging.getLogger("doood")
 
 import dbus, gobject, string
 from dbus.mainloop.glib import DBusGMainLoop
-DBusGMainLoop(set_as_default=True)
-bus = dbus.SessionBus()
-
-def get_purple():
-    global bus
-    obj = bus.get_object("im.pidgin.purple.PurpleService", "/im/pidgin/purple/PurpleObject")
-    purple = dbus.Interface(obj, "im.pidgin.purple.PurpleInterface")
-    return purple
 
 
 def config_file_path():
@@ -55,9 +48,8 @@ def dood(account, sender, message, conversation, flags):
     logging.debug("message = %s", str(message))
     logging.debug("conversation = %s", str(conversation))
     logging.debug("flags = %s", str(flags))
-    logging.debug("type of conversation = %s", str(type(conversation)))
 
-    purple = get_purple()
+    purple = purp.get_purple()
     cd = purple.PurpleConversationGetChatData( conversation )
     the_im = purple.PurpleConvIm( conversation )
     logging.debug("data = %s", str(the_im))
@@ -93,7 +85,7 @@ def dood(account, sender, message, conversation, flags):
 
 
 def respond(who, conversation, saying):
-    purple = get_purple()
+    purple = purp.get_purple()
 
     #sets THEIR typing status in YOUR conversation window. WTF?
     #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
@@ -147,10 +139,10 @@ if __name__ == "__main__":
     handle_cmdargs()
     
     load_settings()
-    bus.add_signal_receiver(dood,
+    purp.bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
-    bus.add_signal_receiver(ci.on_wrote_im_message,
+    purp.bus.add_signal_receiver(ci.on_wrote_im_message,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="WroteImMsg")
 
