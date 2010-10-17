@@ -37,6 +37,12 @@ def load_settings():
 
 
 def dood(account, sender, message, conversation, flags):
+    logging.debug("account = %s", str(account))
+    logging.debug("sender = %s", str(sender))
+    logging.debug("message = %s", str(message))
+    logging.debug("conversation = %s", str(conversation))
+    logging.debug("flags = %s", str(flags))
+
     if sender in ConfigData[u"users"]:
         #print sender, "said: ", message
         for key in ConfigData[u"replies"].iterkeys():
