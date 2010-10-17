@@ -2,38 +2,26 @@
 import the_purple as purp
 import sys, gobject, logging, time, random
 
+import delayed_reply
 logger = logging.getLogger("other_guy")
 
 if __name__ == "__main__":
-    print sys.argv[1]
-    print sys.argv[2]
 
     who = sys.argv[1]
-    conversation = int( sys.argv[2])
+    conversation = int( sys.argv[2] )
     saying = sys.argv[3]
+    sleep_time_for_fake_thought = int( sys.argv[4] )
+    sleep_time_for_fake_typing = int( sys.argv[5] )
 
     bus = purp.get_bus()
 
-    # wait for a second before typing
-    #time.sleep( ci.get_reasonable_pause_before_reply() )
-    time.sleep(10)
-
     purple = purp.get_purple(purp.get_bus())
 
-    #sets THEIR typing status in YOUR conversation window. WTF?
-    #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
+    delayed_reply.do_delayed_reply( who
+                                    , conversation
+                                    , saying
+                                    , sleep_time_for_fake_thought
+                                    , sleep_time_for_fake_typing
+                                    , purple
+                                    , logger )
 
-    logger.debug("gc: %s", purple.PurpleConversationGetGc(conversation))
-    logger.debug("conv: %s", purple.PurpleConvIm(conversation))
-    gc = purple.PurpleConversationGetGc(conversation)
-
-
-    # tell user that I'm typing, and type for a while
-    purple.ServSendTyping(gc, who, 1)
-    time.sleep(15)
-    
-    # send message
-    purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
-    
-    # just in case, set status to "not typing"
-    #purple.ServSendTyping(gc, who, 0)

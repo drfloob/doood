@@ -6,6 +6,7 @@ import sys, time, random, os.path, json
 import logging
 import conversation_info as ci
 import the_purple as purp
+import delayed_reply 
 
 import subprocess as subp
 
@@ -85,7 +86,10 @@ def dood(account, sender, message, conversation, flags):
                         subp.Popen( [ os.path.join(os.path.dirname(__file__), "other_guy.py")
                                       , str(sender)
                                       , str(conversation)
-                                      , ConfigData[u"replies"][key] ] )
+                                      , ConfigData[u"replies"][key]  
+                                      , str(3) # sleep while 'thinking'
+                                      , str(5) # sleep while 'typing'
+                                      ] )
                         logger.debug("hmmmm")
 #                        return 0
                     else:
@@ -99,30 +103,15 @@ def dood(account, sender, message, conversation, flags):
                 break
 
 def respond(who, conversation, saying):
-    print("in serial respond")
+    logger.debug("in serial respond")
 
-    # wait for a second before typing
-    time.sleep( 10 )
-
-    purple = purp.get_purple(purp.get_bus())
-
-    #sets THEIR typing status in YOUR conversation window. WTF?
-    #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
-
-    logger.debug("gc: %s", purple.PurpleConversationGetGc(conversation))
-    logger.debug("conv: %s", purple.PurpleConvIm(conversation))
-    gc = purple.PurpleConversationGetGc(conversation)
-
-
-    # tell user that I'm typing, and type for a while
-    purple.ServSendTyping(gc, who, 1)
-    time.sleep(15)
-    
-    # send message
-    purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
-    
-    # just in case, set status to "not typing"
-    #purple.ServSendTyping(gc, who, 0)
+    delayed_reply.do_delayed_reply ( who
+                                     , conversation
+                                     , saying
+                                     , 5
+                                     , 10
+                                     , purp.get_purple(purp.get_bus())
+                                     , logger )
 
 
 def handle_cmdargs():
