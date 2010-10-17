@@ -157,7 +157,7 @@ if __name__ == "__main__":
     bus.add_signal_receiver(ci.on_wrote_im_message,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="WroteImMsg")
-    purp.bus.add_signal_receiver(ci.track_incoming_messages,
+    bus.add_signal_receiver(ci.track_incoming_messages,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
 
