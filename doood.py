@@ -62,7 +62,10 @@ def dood(account, sender, message, conversation, flags):
                 #debug info
                 logger.debug("responding to: '%s'", key)
 
-                respond(sender, conversation, ConfigData[u"replies"][key])
+                try:
+                    respond(sender, conversation, ConfigData[u"replies"][key])
+                except dbus.exceptions.DBusException:
+                    logger.error("Could not reply. Conversation not found") #there may be more causes of DBusExceptions. @todo look 'em up
                 break
 
 import dbus, gobject, string
