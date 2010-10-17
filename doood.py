@@ -82,13 +82,10 @@ def dood(account, sender, message, conversation, flags):
                         #print "not running in parallel yet"
                         #respond(sender, conversation, ConfigData[u"replies"][key])
                         logger.debug("Spawning new process to handle '%s' message from %s" % (key, sender))
-#                        p = multiprocessing.Process(target=respond, args=(sender, conversation, ConfigData[u"replies"][key]))
-#                        p.start()
-                        reply_txt = "\"" + ConfigData[u"replies"][key] + "\""
                         subp.Popen( [ "/home/kk/DOOD/repo/doood/other_guy.py"
                                       , str(sender)
                                       , str(conversation)
-                                      , reply_txt ] )
+                                      , ConfigData[u"replies"][key] ] )
                         logger.debug("hmmmm")
 #                        return 0
                     else:
