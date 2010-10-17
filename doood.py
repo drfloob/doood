@@ -3,6 +3,8 @@
 CONFIG_FILENAME= ".doood_config.json"
 
 import sys, time, random, os.path, json
+import logging # in the __main__ function the log level is set.
+import conversation_info as ci
 ConfigData= None
 
 def config_file_path():
@@ -63,7 +65,7 @@ def respond(who, conversation, saying):
     gc = purple.PurpleConversationGetGc(conversation)
 
     # wait for a second before typing
-    time.sleep(random.randrange(1,3))
+    time.sleep( ci.get_reasonable_pause_before_reply() )
     
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
@@ -79,6 +81,7 @@ def respond(who, conversation, saying):
 
 if __name__ == "__main__":
     load_settings()
+    logging.basicConfig(level=logging.DEBUG) # this should probably be configurable
     bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
