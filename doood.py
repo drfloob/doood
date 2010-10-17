@@ -1,30 +1,48 @@
 #!/usr/bin/env python
 
-################################################################################
-# CONFIGURATION
-################################################################################
+CONFIG_FILENAME= ".doood_config.json"
 
-## Your custom replies 
-doodz = {
-    'hair cut': 'did you know the human head has over 150,000 hairs on it?'
-    }
+import sys, time, random, os.path, json
+ConfigData= None
 
-## The users that this will work for
-users = ["somechick", "somedood"]
+def config_file_path():
+    """Returns the absolute path to the working config file. If no config file exists, the program quits"""
+    Home= os.getenv("HOME")
+    DirLoc = os.path.dirname(__file__)
 
-################################################################################
-# THE REST IS CODE
-################################################################################
+    if os.path.isfile(os.path.join(DirLoc, CONFIG_FILENAME)):
+        return os.path.join(DirLoc, CONFIG_FILENAME)
+    if os.path.isfile(os.path.join(Home, ".config", CONFIG_FILENAME)):
+        return os.path.join(Home, ".config", CONFIG_FILENAME)
+    if os.path.isfile(os.path.join(Home, CONFIG_FILENAME)):
+        return os.path.join(Home, CONFIG_FILENAME)
 
-import time, random
+    print "No config file was found"
+    sys.exit(42)
+    
+
+def load_settings():
+    global ConfigData
+    FilePath= config_file_path()
+    with open(FilePath) as f:
+        ConfigData= json.load(f)
+
+    #debug info
+    print "Loaded Config Data from file", FilePath, ":"
+    print json.dumps(ConfigData, sort_keys=True, indent=4)
+    print "Raw Config Data"
+    print ConfigData
+
 
 def dood(account, sender, message, conversation, flags):
-    if sender in users:
-        print sender, "said: ", message
-        for key in doodz.iterkeys():
+    if sender in ConfigData[u"users"]:
+        #print sender, "said: ", message
+        for key in ConfigData[u"replies"].iterkeys():
             if string.find(string.lower(message), string.lower(key)) != -1:
+                #debug info
                 print("responding to: ", key)
-                respond(sender, conversation, doodz[key])
+
+                respond(sender, conversation, ConfigData[u"replies"][key])
                 break
 
 import dbus, gobject, string
@@ -59,10 +77,11 @@ def respond(who, conversation, saying):
 
 
 
+if __name__ == "__main__":
+    load_settings()
+    bus.add_signal_receiver(dood,
+                            dbus_interface="im.pidgin.purple.PurpleInterface",
+                            signal_name="ReceivedImMsg")
 
-bus.add_signal_receiver(dood,
-                        dbus_interface="im.pidgin.purple.PurpleInterface",
-                        signal_name="ReceivedImMsg")
-
-loop = gobject.MainLoop()
-loop.run()
+    loop = gobject.MainLoop()
+    loop.run()
