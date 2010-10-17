@@ -46,8 +46,8 @@ def load_settings():
     logger.debug(json.dumps(ConfigData, sort_keys=True, indent=4))
 
 
-def dood(account, sender, message, conversation, flags):
-    logger.debug("entering 'dood' signal-handler")
+def doood(account, sender, message, conversation, flags):
+    logger.debug("entering 'doood' signal-handler")
     logger.debug("\taccount = %s", str(account))
     logger.debug("\tsender = %s", str(sender))
     logger.debug("\tmessage = %s", str(message))
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     handle_cmdargs()
     load_settings()
     bus = purp.get_bus()
-    bus.add_signal_receiver(dood,
+    bus.add_signal_receiver(doood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
     bus.add_signal_receiver(ci.on_wrote_im_message,
