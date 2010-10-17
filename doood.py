@@ -49,10 +49,22 @@ def dood(account, sender, message, conversation, flags):
     logging.debug("message = %s", str(message))
     logging.debug("conversation = %s", str(conversation))
     logging.debug("flags = %s", str(flags))
-
+    logging.debug("type of conversation = %s", str(type(conversation)))
+    
     purple = get_purple()
     cd = purple.PurpleConversationGetChatData( conversation )
-    logging.debug("data = %s", str(cd))
+    the_im = purple.PurpleConvIm( conversation )
+    logging.debug("data = %s", str(the_im))
+
+    for i in range(0,65500):
+        msgtxt = ''
+        try:
+            msgtxt = purple.PurpleConversationMessageGetMessage(i)
+        except:
+            pass
+        else:
+            if len(msgtxt) != 0:
+                logging.debug("i = %d; msg = %s", i, msgtxt)
 
     if sender in ConfigData[u"users"]:
         #print sender, "said: ", message
@@ -100,6 +112,9 @@ if __name__ == "__main__":
     bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
+    bus.add_signal_receiver(ci.on_wrote_im_message,
+                            dbus_interface="im.pidgin.purple.PurpleInterface",
+                            signal_name="WroteImMsg")
 
     loop = gobject.MainLoop()
     loop.run()
