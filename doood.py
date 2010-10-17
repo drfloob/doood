@@ -9,6 +9,7 @@ import the_purple as purp
 
 ConfigData= None
 logger = logging.getLogger("doood")
+ParallelRespond = False
 
 import dbus, gobject, string
 from dbus.mainloop.glib import DBusGMainLoop
@@ -74,7 +75,11 @@ def dood(account, sender, message, conversation, flags):
                 logger.debug("responding to: '%s'", key)
 
                 try:
-                    respond(sender, conversation, ConfigData[u"replies"][key])
+                    if ParallelRespond:
+                        print "not running in parallel yet"
+                        respond(sender, conversation, ConfigData[u"replies"][key])
+                    else:
+                        respond(sender, conversation, ConfigData[u"replies"][key])
                 except dbus.exceptions.DBusException:
                     import traceback
 
@@ -82,7 +87,6 @@ def dood(account, sender, message, conversation, flags):
                     logger.error("DBus Error. Run in debug mode for more information.")
                     logger.debug(string.join(traceback.format_exception(type, value, tb)))
                 break
-
 
 def respond(who, conversation, saying):
     purple = purp.get_purple()
@@ -113,7 +117,7 @@ def handle_cmdargs():
     args = sys.argv[1:]
     logger.debug(args)
     try:
-        oplist, args = getopt.getopt(args, "vd")
+        oplist, args = getopt.getopt(args, "vd", ["parallel"])
     except getopt.GetoptError, e:
         print "Error: %s" % e
         usage()
@@ -125,6 +129,10 @@ def handle_cmdargs():
         elif opt == "-v":
             logging.basicConfig(level=logging.INFO)
             logger.info("info logging level set")
+        elif opt == "--parallel":
+            global ParallelRespond
+            ParallelRespond = True
+            logger.info("Parallel execution ON")
         else:
             print("Invalid Option: %s", opt)
             usage()
@@ -137,7 +145,6 @@ def usage():
 if __name__ == "__main__":
 
     handle_cmdargs()
-    
     load_settings()
     purp.bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
