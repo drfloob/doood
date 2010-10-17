@@ -61,15 +61,17 @@ def dood(account, sender, message, conversation, flags):
     the_im = purple.PurpleConvIm( conversation )
     logging.debug("data = %s", str(the_im))
 
-    for i in range(0,65500):
-        msgtxt = ''
-        try:
-            msgtxt = purple.PurpleConversationMessageGetMessage(i)
-        except:
-            pass
-        else:
-            if len(msgtxt) != 0:
-                logging.debug("i = %d; msg = %s", i, msgtxt)
+    # intentionally disabled test code
+    if 1 == 0:
+        for i in range(0,65500):
+            msgtxt = ''
+            try:
+                msgtxt = purple.PurpleConversationMessageGetMessage(i)
+            except:
+                pass
+            else:
+                if len(msgtxt) != 0:
+                    logging.debug("i = %d; msg = %s", i, msgtxt)
 
     if sender in ConfigData[u"users"]:
         #print sender, "said: ", message
