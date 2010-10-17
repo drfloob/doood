@@ -6,10 +6,8 @@ import sys, time, random, os.path, json
 import logging
 import conversation_info as ci
 import the_purple as purp
-import multiprocessing
 
 import subprocess as subp
-import shlex
 
 ConfigData= None
 logger = logging.getLogger("doood")
@@ -105,10 +103,7 @@ def dood(account, sender, message, conversation, flags):
 
 def respond(who, conversation, saying):
     # wait for a second before typing
-    #time.sleep( ci.get_reasonable_pause_before_reply() )
-    for i in range(0,29999):
-        if i % 1000 == 0:
-            logger.debug("wut")
+    time.sleep( ci.get_reasonable_pause_before_reply() )
 
     purple = purp.get_purple(purp.get_bus())
 
@@ -122,7 +117,7 @@ def respond(who, conversation, saying):
 
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
-    #time.sleep(random.randrange(2,5))
+    time.sleep(random.randrange(2,5))
     
     # send message
     purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
