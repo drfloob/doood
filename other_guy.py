@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     # wait for a second before typing
     #time.sleep( ci.get_reasonable_pause_before_reply() )
-    time.sleep(random.randrange(2,5))
+    time.sleep(10)
 
     purple = purp.get_purple(purp.get_bus())
 
@@ -30,14 +30,10 @@ if __name__ == "__main__":
 
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
-    time.sleep(random.randrange(2,5))
+    time.sleep(15)
     
     # send message
     purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
     
     # just in case, set status to "not typing"
     #purple.ServSendTyping(gc, who, 0)
-
-
-#    loop = gobject.MainLoop()
- #   loop.run()

@@ -82,7 +82,7 @@ def dood(account, sender, message, conversation, flags):
                         #print "not running in parallel yet"
                         #respond(sender, conversation, ConfigData[u"replies"][key])
                         logger.debug("Spawning new process to handle '%s' message from %s" % (key, sender))
-                        subp.Popen( [ "/home/kk/DOOD/repo/doood/other_guy.py"
+                        subp.Popen( [ os.path.join(os.path.dirname(__file__), "other_guy.py")
                                       , str(sender)
                                       , str(conversation)
                                       , ConfigData[u"replies"][key] ] )
