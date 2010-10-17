@@ -16,11 +16,12 @@ def on_wrote_im_message(account
                         , message
                         , conversation
                         , flags ):
-    logger.debug("account = %s", str(account))
-    logger.debug("sender = %s", str(who_wrote))
-    logger.debug("message = %s", str(message))
-    logger.debug("conversation = %s", str(conversation))
-    logger.debug("flags = %s", str(flags))
+    logger.debug("entering on_wrote_im_message")
+    logger.debug("\taccount = %s", str(account))
+    logger.debug("\tsender = %s", str(who_wrote))
+    logger.debug("\tmessage = %s", str(message))
+    logger.debug("\tconversation = %s", str(conversation))
+    logger.debug("\tflags = %s", str(flags))
 
 
 

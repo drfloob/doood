@@ -44,16 +44,17 @@ def load_settings():
 
 
 def dood(account, sender, message, conversation, flags):
-    logger.debug("account = %s", str(account))
-    logger.debug("sender = %s", str(sender))
-    logger.debug("message = %s", str(message))
-    logger.debug("conversation = %s", str(conversation))
-    logger.debug("flags = %s", str(flags))
+    logger.debug("entering 'dood' signal-handler")
+    logger.debug("\taccount = %s", str(account))
+    logger.debug("\tsender = %s", str(sender))
+    logger.debug("\tmessage = %s", str(message))
+    logger.debug("\tconversation = %s", str(conversation))
+    logger.debug("\tflags = %s", str(flags))
 
     purple = purp.get_purple()
     cd = purple.PurpleConversationGetChatData( conversation )
     the_im = purple.PurpleConvIm( conversation )
-    logger.debug("data = %s", str(the_im))
+    logger.debug("\tdata = %s", str(the_im))
 
     # intentionally disabled test code
     if 1 == 0:
@@ -68,7 +69,7 @@ def dood(account, sender, message, conversation, flags):
                     logger.debug("i = %d; msg = %s", i, msgtxt)
 
     if sender in ConfigData[u"users"]:
-        logger.debug("%s said: '%s'", sender, message)
+        logger.debug("\t%s said: '%s'", sender, message)
         for key in ConfigData[u"replies"].iterkeys():
             if string.find(string.lower(message), string.lower(key)) != -1:
                 #debug info
