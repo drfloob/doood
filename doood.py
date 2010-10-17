@@ -6,6 +6,7 @@ import sys, time, random, os.path, json
 import logging
 import conversation_info as ci
 import the_purple as purp
+import multiprocessing
 
 ConfigData= None
 logger = logging.getLogger("doood")
@@ -51,7 +52,7 @@ def dood(account, sender, message, conversation, flags):
     logger.debug("\tconversation = %s", str(conversation))
     logger.debug("\tflags = %s", str(flags))
 
-    purple = purp.get_purple()
+    purple = purp.get_purple(purp.get_bus())
     cd = purple.PurpleConversationGetChatData( conversation )
     the_im = purple.PurpleConvIm( conversation )
     logger.debug("\tdata = %s", str(the_im))
@@ -77,8 +78,11 @@ def dood(account, sender, message, conversation, flags):
 
                 try:
                     if ParallelRespond:
-                        print "not running in parallel yet"
-                        respond(sender, conversation, ConfigData[u"replies"][key])
+                        #print "not running in parallel yet"
+                        #respond(sender, conversation, ConfigData[u"replies"][key])
+                        logger.debug("Spawning new process to handle '%s' message from %s" % (key, sender))
+                        p = multiprocessing.Process(target=respond, args=(sender, conversation, ConfigData[u"replies"][key]))
+                        p.start()
                     else:
                         respond(sender, conversation, ConfigData[u"replies"][key])
                 except dbus.exceptions.DBusException:
@@ -90,7 +94,7 @@ def dood(account, sender, message, conversation, flags):
                 break
 
 def respond(who, conversation, saying):
-    purple = purp.get_purple()
+    purple = purp.get_purple(purp.get_bus())
 
     #sets THEIR typing status in YOUR conversation window. WTF?
     #purple.PurpleConvImSetTypingState(purple.PurpleConvIm(conversation), 1)
@@ -144,15 +148,16 @@ def usage():
 
 
 if __name__ == "__main__":
-
     handle_cmdargs()
     load_settings()
-    purp.bus.add_signal_receiver(dood,
+    bus = purp.get_bus()
+    bus.add_signal_receiver(dood,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="ReceivedImMsg")
-    purp.bus.add_signal_receiver(ci.on_wrote_im_message,
+    bus.add_signal_receiver(ci.on_wrote_im_message,
                             dbus_interface="im.pidgin.purple.PurpleInterface",
                             signal_name="WroteImMsg")
 
     loop = gobject.MainLoop()
     loop.run()
+
