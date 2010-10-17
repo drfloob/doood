@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import the_purple as purp
-import sys, gobject, logging
+import sys, gobject, logging, time, random
 
 logger = logging.getLogger("other_guy")
 
 if __name__ == "__main__":
     print sys.argv[1]
     print sys.argv[2]
-
 
     who = sys.argv[1]
     conversation = int( sys.argv[2])
@@ -17,9 +16,7 @@ if __name__ == "__main__":
 
     # wait for a second before typing
     #time.sleep( ci.get_reasonable_pause_before_reply() )
-    for i in range(0,29999):
-        if i % 1000 == 0:
-            logger.debug("wut")
+    time.sleep(random.randrange(2,5))
 
     purple = purp.get_purple(purp.get_bus())
 
@@ -33,13 +30,13 @@ if __name__ == "__main__":
 
     # tell user that I'm typing, and type for a while
     purple.ServSendTyping(gc, who, 1)
-    #time.sleep(random.randrange(2,5))
+    time.sleep(random.randrange(2,5))
     
     # send message
     purple.PurpleConvImSend(purple.PurpleConvIm(conversation), saying)
     
     # just in case, set status to "not typing"
-    purple.ServSendTyping(gc, who, 0)
+    #purple.ServSendTyping(gc, who, 0)
 
 
 #    loop = gobject.MainLoop()
